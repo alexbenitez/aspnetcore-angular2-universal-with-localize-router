@@ -12,8 +12,19 @@
       </div>
     </div>
     <div class='clearfix'></div>
+    <div>
+        <a [routerLink]="'/' | localize" [routerLinkActive]="['router-link-active']" [routerLinkActiveOptions]="{exact:true}">
+          {{'HOME' | translate}}
+        </a>
+    </div>
     <div class='navbar-collapse {{collapse}}'>
       <ul class='nav navbar-nav'>
+         
+        <!-- <li [routerLinkActive]="['router-link-active']" [routerLinkActiveOptions]="{exact:true}" (click)="collapseMenu()">
+            <a [routerLink]="['/home | localize']">
+              <span class='glyphicon glyphicon-home'></span> {{ 'HOME' | translate }}
+            </a>
+        </li> -->
         <li [routerLinkActive]="['link-active']" (click)="collapseMenu()">
           <a [routerLink]="['/home']">
             <span class='glyphicon glyphicon-home'></span> {{ 'HOME' | translate }}

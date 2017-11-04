@@ -1,5 +1,5 @@
 import { NgModule, Inject } from '@angular/core';
-import { RouterModule, PreloadAllModules } from '@angular/router';
+import { RouterModule, PreloadAllModules, Routes } from '@angular/router';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { HttpModule, Http } from '@angular/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -26,6 +26,10 @@ import { LinkService } from './shared/link.service';
 import { UserService } from './shared/user.service';
 import { ORIGIN_URL } from '@nguniversal/aspnetcore-engine';
 
+import {LocalizeRouterModule, LocalizeParser, LocalizeRouterSettings, LocalizeRouterPipe} from 'localize-router';
+import {LocalizeRouterHttpLoader} from 'localize-router-http-loader';
+
+
 export function createTranslateLoader(http: HttpClient, baseHref) {
     // Temporary Azure hack
     if (baseHref === null && typeof window !== 'undefined') {
@@ -34,6 +38,78 @@ export function createTranslateLoader(http: HttpClient, baseHref) {
     // i18n files are in `wwwroot/assets/`
     return new TranslateHttpLoader(http, `${baseHref}/assets/i18n/`, '.json');
 }
+
+export var routes:Routes = [
+    {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+    },
+    {
+        path: 'home', component: HomeComponent,
+
+        // *** SEO Magic ***
+        // We're using "data" in our Routes to pass in our <title> <meta> <link> tag information
+        // Note: This is only happening for ROOT level Routes, you'd have to add some additional logic if you wanted this for Child level routing
+        // When you change Routes it will automatically append these to your document for you on the Server-side
+        //  - check out app.component.ts to see how it's doing this
+        data: {
+            title: 'Homepage',
+            meta: [{ name: 'description', content: 'This is an example Description Meta tag!' }],
+            links: [
+                { rel: 'canonical', href: 'http://blogs.example.com/blah/nice' },
+                { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/' }
+            ]
+        }
+    },
+    {
+        path: 'counter', component: CounterComponent,
+        data: {
+            title: 'Counter',
+            meta: [{ name: 'description', content: 'This is an Counter page Description!' }],
+            links: [
+                { rel: 'canonical', href: 'http://blogs.example.com/counter/something' },
+                { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/counter' }
+            ]
+        }
+    },
+    {
+        path: 'users', component: UsersComponent,
+        data: {
+            title: 'Users REST example',
+            meta: [{ name: 'description', content: 'This is User REST API example page Description!' }],
+            links: [
+                { rel: 'canonical', href: 'http://blogs.example.com/chat/something' },
+                { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/users' }
+            ]
+        }
+    },
+    {
+        path: 'ngx-bootstrap', component: NgxBootstrapComponent,
+        data: {
+            title: 'Ngx-bootstrap demo!!',
+            meta: [{ name: 'description', content: 'This is an Demo Bootstrap page Description!' }],
+            links: [
+                { rel: 'canonical', href: 'http://blogs.example.com/bootstrap/something' },
+                { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/bootstrap-demo' }
+            ]
+        }
+    },
+
+    { path: 'lazy', loadChildren: './containers/lazy/lazy.module#LazyModule'},
+
+    {
+        path: '**', component: NotFoundComponent,
+        data: {
+            title: '404 - Not found',
+            meta: [{ name: 'description', content: '404 - Error' }],
+            links: [
+                { rel: 'canonical', href: 'http://blogs.example.com/bootstrap/something' },
+                { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/bootstrap-demo' }
+            ]
+        }
+    }
+];
 
 @NgModule({
     declarations: [
@@ -44,7 +120,8 @@ export function createTranslateLoader(http: HttpClient, baseHref) {
         UserDetailComponent,
         HomeComponent,
         NotFoundComponent,
-        NgxBootstrapComponent
+        NgxBootstrapComponent,
+        LocalizeRouterPipe
     ],
     imports: [
         CommonModule,
@@ -69,77 +146,7 @@ export function createTranslateLoader(http: HttpClient, baseHref) {
         }),
 
         // App Routing
-        RouterModule.forRoot([
-            {
-                path: '',
-                redirectTo: 'home',
-                pathMatch: 'full'
-            },
-            {
-                path: 'home', component: HomeComponent,
-
-                // *** SEO Magic ***
-                // We're using "data" in our Routes to pass in our <title> <meta> <link> tag information
-                // Note: This is only happening for ROOT level Routes, you'd have to add some additional logic if you wanted this for Child level routing
-                // When you change Routes it will automatically append these to your document for you on the Server-side
-                //  - check out app.component.ts to see how it's doing this
-                data: {
-                    title: 'Homepage',
-                    meta: [{ name: 'description', content: 'This is an example Description Meta tag!' }],
-                    links: [
-                        { rel: 'canonical', href: 'http://blogs.example.com/blah/nice' },
-                        { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/' }
-                    ]
-                }
-            },
-            {
-                path: 'counter', component: CounterComponent,
-                data: {
-                    title: 'Counter',
-                    meta: [{ name: 'description', content: 'This is an Counter page Description!' }],
-                    links: [
-                        { rel: 'canonical', href: 'http://blogs.example.com/counter/something' },
-                        { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/counter' }
-                    ]
-                }
-            },
-            {
-                path: 'users', component: UsersComponent,
-                data: {
-                    title: 'Users REST example',
-                    meta: [{ name: 'description', content: 'This is User REST API example page Description!' }],
-                    links: [
-                        { rel: 'canonical', href: 'http://blogs.example.com/chat/something' },
-                        { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/users' }
-                    ]
-                }
-            },
-            {
-                path: 'ngx-bootstrap', component: NgxBootstrapComponent,
-                data: {
-                    title: 'Ngx-bootstrap demo!!',
-                    meta: [{ name: 'description', content: 'This is an Demo Bootstrap page Description!' }],
-                    links: [
-                        { rel: 'canonical', href: 'http://blogs.example.com/bootstrap/something' },
-                        { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/bootstrap-demo' }
-                    ]
-                }
-            },
-
-            { path: 'lazy', loadChildren: './containers/lazy/lazy.module#LazyModule'},
-
-            {
-                path: '**', component: NotFoundComponent,
-                data: {
-                    title: '404 - Not found',
-                    meta: [{ name: 'description', content: '404 - Error' }],
-                    links: [
-                        { rel: 'canonical', href: 'http://blogs.example.com/bootstrap/something' },
-                        { rel: 'alternate', hreflang: 'es', href: 'http://es.example.com/bootstrap-demo' }
-                    ]
-                }
-            }
-        ], {
+        RouterModule.forRoot(routes, {
           // Router options
           useHash: false,
           preloadingStrategy: PreloadAllModules,

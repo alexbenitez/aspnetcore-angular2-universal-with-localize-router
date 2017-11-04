@@ -1,3 +1,4 @@
+import { Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { ServerModule } from '@angular/platform-server';
 import { BrowserModule } from '@angular/platform-browser';
@@ -8,6 +9,25 @@ import { AppComponent } from './app.component';
 import { ServerTransferStateModule } from '@angular/platform-server';
 
 import { ServerPrebootModule } from 'preboot/server';
+
+// export class LocalizeUniversalLoader extends LocalizeParser {
+//   /**
+//    * Gets config from the server
+//    * @param routes
+//    */
+//   public load(routes: Routes): Promise<any> {
+//     return new Promise((resolve: any) => {
+//       let data: any = JSON.parse(fs.readFileSync(`assets/locales.json`, 'utf8'));
+//       this.locales = data.locales;
+//       this.prefix = data.prefix;
+//       this.init(routes).then(resolve);
+//     });
+//   }
+// }
+
+// export function localizeLoaderFactory(translate: TranslateService, location: Location, settings: LocalizeRouterSettings) {
+//   return new LocalizeUniversalLoader(translate, location, settings);
+// }
 
 @NgModule({
   bootstrap: [AppComponent],

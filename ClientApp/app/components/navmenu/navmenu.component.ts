@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import {LocalizeRouterModule, LocalizeParser, LocalizeRouterSettings} from 'localize-router';
+import {LocalizeRouterHttpLoader} from 'localize-router-http-loader';
+import {RouterModule} from '@angular/router';
 
 @Component({
     selector: 'app-nav-menu',
